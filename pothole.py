@@ -258,7 +258,7 @@ def Inference(weights_path, image_path):
         
         
         potholes = np.sum(mask)
-        potholes = potholes*100/(np.prod(mask.shape)/3)
+        potholes = potholes*100/(np.prod(mask.shape))
         
         
         print("\nTotal image area: {0}x{1} pixels\n".format(mask.shape[0], mask.shape[1] ))
@@ -363,7 +363,7 @@ def Inference_Multi(weights_path, images_path, verbose=1, batch_size=1):
 
                 results.append({"image": np.where(mask, outimg, img_yuv).astype(np.uint8),
                                 "name": image_paths[i+start],
-                                "total": np.prod(mask.shape)/3,
+                                "total": np.prod(mask.shape),
                                 "potholes": potholes
                                })
 
