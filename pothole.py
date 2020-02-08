@@ -196,7 +196,7 @@ def Inference(weights_path, image_path):
         IMAGES_PER_GPU = 1
 
     config = InferenceConfig()
-    config.display()
+    # config.display()
 
     # Create model
     model = modellib.MaskRCNN(mode="inference", config=config,
