@@ -12,10 +12,10 @@ Open a terminal and execute the following lines:
 git clone https://github.com/Rajat-Roy/potholes.git
 cd potholes
 pip install -r requirements.txt
-wget https://github.com/Rajat-Roy/potholes/releases/download/v1.0/mask_rcnn_car_damage_0030.h5
-wget https://github.com/Rajat-Roy/potholes/releases/download/v1.0/dataset.zip
+wget https://github.com/Rajat-Roy/potholes/releases/download/v1.0/mask_rcnn_pothole_0030.h5
+wget https://github.com/Rajat-Roy/potholes/releases/download/v1.0/pothole_images.zip
 ```
-Extract the dataset.zip archive
+Extract the images archive
 
 If jupyter notebook is not installed already:
 ```
