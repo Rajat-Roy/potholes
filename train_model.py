@@ -8,19 +8,13 @@ Usage: import the module (see Jupyter notebooks for examples), or run from
        the command line as such:
 
     # Train a new model starting from pre-trained COCO weights
-    python train_model.py train --dataset=/path/to/car_damage/dataset --weights=coco
+    python train_model.py train --dataset=/path/to/potholes/dataset --weights=coco
 
     # Resume training a model that you had trained earlier
-    python train_model.py train --dataset=/path/to/car_damage/dataset --weights=last
+    python train_model.py train --dataset=/path/to/potholes/dataset --weights=last
 
     # Train a new model starting from ImageNet weights
-    python train_model.py train --dataset=/path/to/car_damage/dataset --weights=imagenet
-
-    # Apply color splash to an image
-    python train_model.py splash --weights=/path/to/weights/file.h5 --image=<URL or path to file>
-
-    # Apply color splash to video using the last weights you trained
-    python train_model.py splash --weights=last --video=<URL or path to file>
+    python train_model.py train --dataset=/path/to/potholes/dataset --weights=imagenet
 """
 
 import os
@@ -51,19 +45,19 @@ DEFAULT_LOGS_DIR = os.path.join(ROOT_DIR, "logs")
 ############################################################
 
 
-class CarConfig(Config):
+class PotholeConfig(Config):
     """Configuration for training on the toy  dataset.
     Derives from the base Config class and overrides some values.
     """
     # Give the configuration a recognizable name
-    NAME = "car_damage"
+    NAME = "pothole"
 
     # We use a GPU with 12GB memory, which can fit two images.
     # Adjust down if you use a smaller GPU.
     IMAGES_PER_GPU = 2
 
     # Number of classes (including background)
-    NUM_CLASSES = 1 + 1  # Background + car_damage
+    NUM_CLASSES = 1 + 1  # Background + pothole
 
     # Number of training steps per epoch
     STEPS_PER_EPOCH = 100
@@ -76,7 +70,7 @@ class CarConfig(Config):
 #  Dataset
 ############################################################
 
-class CarDataset(utils.Dataset):
+class PotholeDataset(utils.Dataset):
 
     def load_tissue(self, dataset_dir, subset):
         """Load a subset of the dataset.
@@ -84,7 +78,7 @@ class CarDataset(utils.Dataset):
         subset: Subset to load: train or val
         """
         # Add classes. We have only one class to add.
-        self.add_class("car_damage", 1, "car_damage")
+        self.add_class("pothole", 1, "pothole")
 
         # Train or validation dataset?
         assert subset in ["train", "val"]
@@ -132,7 +126,7 @@ class CarDataset(utils.Dataset):
             height, width = image.shape[:2]
 
             self.add_image(
-                "car_damage",
+                "pothole",
                 image_id=a['filename'],  # use file name as a unique image id
                 path=image_path,
                 width=width, height=height,
@@ -147,7 +141,7 @@ class CarDataset(utils.Dataset):
         """
         # If not a balloon dataset image, delegate to parent class.
         image_info = self.image_info[image_id]
-        if image_info["source"] != "car_damage":
+        if image_info["source"] != "pothole":
             return super(self.__class__, self).load_mask(image_id)
 
         # Convert polygons to a bitmap mask of shape
@@ -167,7 +161,7 @@ class CarDataset(utils.Dataset):
     def image_reference(self, image_id):
         """Return the path of the image."""
         info = self.image_info[image_id]
-        if info["source"] == "car_damage":
+        if info["source"] == "pothole":
             return info["path"]
         else:
             super(self.__class__, self).image_reference(image_id)
@@ -176,12 +170,12 @@ class CarDataset(utils.Dataset):
 def train(model):
     """Train the model."""
     # Training dataset.
-    dataset_train = CarDataset()
+    dataset_train = PotholeDataset()
     dataset_train.load_tissue(args.dataset, "train")
     dataset_train.prepare()
 
     # Validation dataset
-    dataset_val = CarDataset()
+    dataset_val = PotholeDataset()
     dataset_val.load_tissue(args.dataset, "val")
     dataset_val.prepare()
 
@@ -301,47 +295,6 @@ def detect_and_color_splash(model, image_path=None, video_path=None):
         vwriter.release()
     print("Saved to ", file_name)
 
-    
-    
-############################################################
-#  Inference
-############################################################
-def Inference(model, image):
-    class InferenceConfig(TissueConfig):
-        # Set batch size to 1 since we'll be running inference on
-        # one image at a time. Batch size = GPU_COUNT * IMAGES_PER_GPU
-        GPU_COUNT = 1
-        IMAGES_PER_GPU = 1
-
-    config = InferenceConfig()
-    config.display()
-
-    # Create model
-    model = modellib.MaskRCNN(mode="inference", config=config,
-                                  model_dir=DEFAULT_LOGS_DIR)
-
-    weights_path = "../../logs/balloon20200201T1505/mask_rcnn_balloon_0030.h5"
-    image_path = "../../datasets/tissue/val/84.jpg"
-
-
-    # Load weights
-    model.load_weights(weights_path, by_name=True)
-
-    # Train or evaluate
-
-    # Run model detection and generate the color splash effect
-    # Read image
-    image = skimage.io.imread(image_path)
-    # Detect objects
-    r = model.detect([image], verbose=1)[0]
-    # Color splash
-    splash = color_splash(image, r['masks'])
-    # Save output
-    # file_name = "splash_{:%Y%m%dT%H%M%S}.png".format(datetime.datetime.now())
-    # skimage.io.imsave(file_name, splash)
-    return splash
-
-
 ############################################################
 #  Training
 ############################################################
@@ -356,8 +309,8 @@ if __name__ == '__main__':
                         metavar="<command>",
                         help="'train' or 'splash'")
     parser.add_argument('--dataset', required=False,
-                        metavar="/path/to/car_damage/dataset/",
-                        help='Directory of the tissue dataset')
+                        metavar="/path/to/potholes/dataset/",
+                        help='Directory of the potholes dataset')
     parser.add_argument('--weights', required=True,
                         metavar="/path/to/weights.h5",
                         help="Path to weights .h5 file or 'coco'")
