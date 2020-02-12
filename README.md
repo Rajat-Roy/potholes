@@ -5,6 +5,8 @@ The following code adapts from the [Mask_RCNN](https://arxiv.org/abs/1703.06870)
 *    Main source repository: https://github.com/matterport/Mask_RCNN
 
 #### Run inference on images
+#### To run on Google Colab with zero configuration, copy this [notebook](https://colab.research.google.com/drive/1HM6nfJbxexLwNzmA50hrJxVfsJhRquwl) to your own google drive.
+#### To run locally follow these steps:
 Prepare a python 3.7 environment.
 
 Open a terminal and execute the following lines:
