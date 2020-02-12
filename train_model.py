@@ -248,10 +248,10 @@ def detect_and_color_splash(model, image_path=None, video_path=None):
     if image_path:
         # Run model detection and generate the color splash effect
         print("Running on {}".format(args.image))
-        for filename in os.listdir("datasets/car_damage/val/"):
+        for filename in os.listdir("datasets/potholes/val/"):
             print(filename)
             # Read image
-            image = skimage.io.imread("datasets/car_damage/val/"+filename)
+            image = skimage.io.imread("datasets/potholes/val/"+filename)
             # Detect objects
             r = model.detect([image], verbose=0)[0]
             # Color splash
@@ -339,9 +339,9 @@ if __name__ == '__main__':
 
     # Configurations
     if args.command == "train":
-        config = CarConfig()
+        config = PotholeConfig()
     else:
-        class InferenceConfig(CarConfig):
+        class InferenceConfig(PotholeConfig):
             # Set batch size to 1 since we'll be running inference on
             # one image at a time. Batch size = GPU_COUNT * IMAGES_PER_GPU
             GPU_COUNT = 1
